@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software or its results, please cite it as below."
+title: "curvature-quantiles: curvature quantiles, curvature-mass profiles and quantile resampling for planar curves"
+type: software
+authors:
+  - family-names: Wish
+    given-names: Michael J.
+version: 0.1.0
+date-released: 2026-10-19
+license: MIT
+repository-code: "https://github.com/mike8685/curvature-quantiles"
+keywords:
+  - total absolute curvature
+  - quantiles
+  - Wasserstein distance
+  - turning function
+  - polygonal approximation
+  - polyline simplification
+preferred-citation:
+  type: article
+  title: "Curvature Quantiles: Turning as a Distribution Along Planar Curves, with an Application to Fixed-Budget Polyline Simplification"
+  authors:
+    - family-names: Wish
+      given-names: Michael J.
+  year: 2026
+  status: preprint

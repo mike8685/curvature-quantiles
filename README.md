@@ -1,0 +1,67 @@
+# curvature-quantiles
+
+Code, data and paper for **"Curvature Quantiles: Turning as a Distribution Along Planar Curves, with an Application to Fixed-Budget Polyline Simplification"** (M. J. Wish, preprint, October 2026).
+
+The idea: for a planar curve, `|κ| ds = |dθ|`. Normalize it and you have a probability distribution of *turning* along the curve, with a median, quantiles, quantile gaps and a Wasserstein-1 distance. Placing `K` points at equal quantiles of `|κ|^(1/2) ds` is also a fast, single-pass polyline simplifier.
+
+## Install
+
+```bash
+pip install -e .                 # library only (numpy, scipy)
+pip install -e ".[experiments,test]"
+```
+
+## Use
+
+```python
+import numpy as np
+from curvquant import profile, curvature_median, profile_distance, quantile_resample
+
+x = np.linspace(0, 2, 2001)
+pts = np.column_stack([x, x**2])
+
+curvature_median(pts)                    # ~ (0.3904, 0.1524); exact x = (sqrt(17)-1)/8
+prof = profile(pts)                      # pure turning distribution
+prof.quantile([0.25, 0.5, 0.75])         # quantiles in normalized arc length
+hyb = profile(pts, beta=1.0)             # hybrid: ds/L + beta*|kappa| ds
+
+profile_distance(prof, profile(pts[::-1]))        # W1 between turning distributions
+
+simplified = quantile_resample(pts, K=30, beta=None, p=0.5, pin_corners=True)
+```
+
+Baselines in `curvquant.resample`: `uniform_arclength`, `rdp_fixed_k` (Ramer–Douglas–Peucker to exactly K vertices), `vw_fixed_k` (Visvalingam–Whyatt), and `optimal_subset_min_eps` (exact dynamic-programming optimum over vertex subsets, O(N³), for N up to ~1000).
+
+## Reproduce the paper
+
+```bash
+python experiments/run_all.py     # ~5 min; writes results/, paper/figures/, paper/generated/
+python -m pytest -q
+cd paper && latexmk -pdf main.tex
+```
+
+Every number in the paper is read from `paper/generated/numbers.tex`, which `run_all.py` writes. Nothing is typed in by hand.
+
+## What holds up and what doesn't
+
+Verified by this code:
+- Closed-form curvature medians on convex graphs; the median at an inflection is square-root sensitive to boundary-slope mismatch.
+- Profile distance = Wasserstein-1, exactly similarity- and reparameterization-invariant; on convex arcs it equals the normalized turning-function distance.
+- Quantile resampling with p = 1/2 beats fixed-K RDP on clean curves (geometric-mean error ratio ≈ 0.72 over 45 family/budget pairs) and lands within ≈1.3× of the optimal vertex subset.
+
+Not supported:
+- Under measurement noise, smoothed RDP beats quantile resampling in every case tested.
+- As a stroke classifier the unsigned profile distance is weaker than the signed turning function under strong perturbation.
+- The profile distance ignores the sign of curvature (an S and a U can be at distance 0) and depends on the start point for closed curves.
+
+## Prior work
+
+The cumulative distribution here coincides with the curvature-based canonical parameterizations of Tumpach (GSI 2023, doi:10.1007/978-3-031-38271-0_4). The |κ|^(1/2) density is classical (Fejes Tóth 1948; McClure & Vitale 1975). See the paper for the full list.
+
+## Cite
+
+See `CITATION.cff`. A DOI will be added once the first release is archived on Zenodo.
+
+## License
+
+MIT (code). The paper text is © the author, shared under CC BY 4.0.

@@ -1,0 +1,11 @@
+level,method,accuracy
+mild,"Euclidean, unaligned",0.8733333333333333
+mild,Procrustes (rotation + scale),1.0
+mild,turning function (Arkin et al.),1.0
+mild,curvature profile $D$ (pure),1.0
+mild,curvature profile $D_\beta$ ($\beta=1$),1.0
+strong,"Euclidean, unaligned",0.8333333333333334
+strong,Procrustes (rotation + scale),0.98
+strong,turning function (Arkin et al.),0.9933333333333333
+strong,curvature profile $D$ (pure),0.8933333333333333
+strong,curvature profile $D_\beta$ ($\beta=1$),0.8933333333333333
