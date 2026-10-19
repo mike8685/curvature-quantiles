@@ -1,6 +1,6 @@
 # curvature-quantiles
 
-Code, data and paper for **"Curvature Quantiles: Turning as a Distribution Along Planar Curves, with an Application to Fixed-Budget Polyline Simplification"** (M. J. Wish, preprint, October 2026).
+Code, data and paper for **"Curvature Quantiles: Turning as a Distribution Along Planar Curves, with an Application to Fixed-Budget Polyline Simplification"** (M. J. Wish, preprint, October 2026). DOI: [10.5281/zenodo.23483923](https://doi.org/10.5281/zenodo.23483923).
 
 The idea: for a planar curve, `|κ| ds = |dθ|`. Normalize it and you have a probability distribution of *turning* along the curve, with a median, quantiles, quantile gaps and a Wasserstein-1 distance. Placing `K` points at equal quantiles of `|κ|^(1/2) ds` is also a fast, single-pass polyline simplifier.
 
@@ -60,7 +60,7 @@ The cumulative distribution here coincides with the curvature-based canonical pa
 
 ## Cite
 
-See `CITATION.cff`. A DOI will be added once the first release is archived on Zenodo.
+See `CITATION.cff`. Archived on Zenodo: [10.5281/zenodo.23483923](https://doi.org/10.5281/zenodo.23483923) (concept DOI, always the latest version; v0.1.0 is 10.5281/zenodo.23483924).
 
 ## License
 
