@@ -1,0 +1,128 @@
+{
+  "dataset": "ne_coastline",
+  "split": "dev",
+  "n_curves": 150,
+  "load_stats": {
+    "raw_curves": 4133,
+    "too_short": 3164,
+    "duplicates": 0,
+    "eligible": {
+      "dev": 308,
+      "test": 661
+    },
+    "clusters": {
+      "dev": 61,
+      "test": 154
+    },
+    "skips": {}
+  },
+  "plan": [
+    [
+      "cq",
+      0
+    ],
+    [
+      "cq",
+      1
+    ],
+    [
+      "cq",
+      2
+    ],
+    [
+      "cq",
+      4
+    ],
+    [
+      "cq",
+      8
+    ],
+    [
+      "cq",
+      16
+    ],
+    [
+      "rdp",
+      0
+    ],
+    [
+      "rdp",
+      1
+    ],
+    [
+      "rdp",
+      2
+    ],
+    [
+      "rdp",
+      4
+    ],
+    [
+      "rdp",
+      8
+    ],
+    [
+      "rdp",
+      16
+    ],
+    [
+      "vw",
+      0
+    ],
+    [
+      "vw",
+      1
+    ],
+    [
+      "vw",
+      2
+    ],
+    [
+      "vw",
+      4
+    ],
+    [
+      "vw",
+      8
+    ],
+    [
+      "vw",
+      16
+    ],
+    [
+      "uniform",
+      0
+    ],
+    [
+      "cq_unpinned",
+      0
+    ],
+    [
+      "cq_snapped",
+      0
+    ],
+    [
+      "cq_p1",
+      0
+    ],
+    [
+      "oracle",
+      0
+    ]
+  ],
+  "tuned": {
+    "cq": 4,
+    "rdp": 0,
+    "vw": 0
+  },
+  "code_hash": "519185ae0a7f0c0f9878006b67c5d869a45cd54510a2f9077431b13d2b9e1da7",
+  "versions": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "pandas": "3.0.5",
+    "shapely": "2.2.0",
+    "gpxpy": "1.6.2",
+    "ezdxf": "1.4.5"
+  },
+  "seconds": 129.3
+}

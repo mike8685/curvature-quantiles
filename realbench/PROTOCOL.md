@@ -337,8 +337,22 @@ run):**
   worse). H2 GMR 1.46. Tuned H3 GMR 1.51. Chosen c: cq 4, rdp 0, vw 1.
 
 Those runs used v1.0's per-feature clusters, edge-pinned smoothing and
-zero-only error floor. They are superseded by the v1.1 dev runs, which are
+zero-only error floor. They are superseded by the v1.1 dev runs below, which are
 committed alongside this version.
+
+- 2026-10-29, v1.1 dev runs, 150 curves each, GMR CQ/RDP. In all three, CQ was
+  worse than RDP on every comparison.
+
+  | dataset | H1 | H2 (vs VW) | tuned H3 | chosen c (cq / rdp / vw) | corner pinning switched off |
+  | --- | --- | --- | --- | --- | --- |
+  | `ne_coastline` | 1.80 | 1.12 | 1.66 | 4 / 0 / 0 | 84% of cq runs |
+  | `ne_rivers` | 1.94 | 1.45 | 1.55 | 4 / 0 / 1 | 70% of cq runs |
+  | `ne_roads` | 1.74 | 1.52 | 1.39 | 2 / 0 / 0 | 60% of cq runs |
+
+  Pinning switches off mostly because these coarse polylines have more than K-2
+  corners above pi/6. The method is **not** being changed in response. Any
+  modified CQ variant would be a new method, needing new data or a new
+  pre-registration.
 
 **What changed after those results were seen (v1.0 to v1.1).** Every change
 below came from an independent adversarial review of the harness. None is a

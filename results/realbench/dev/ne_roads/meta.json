@@ -7,13 +7,14 @@
     "too_short": 54220,
     "duplicates": 0,
     "eligible": {
-      "dev": 766,
-      "test": 1659
+      "dev": 750,
+      "test": 1675
     },
     "clusters": {
-      "dev": 766,
-      "test": 1659
-    }
+      "dev": 59,
+      "test": 130
+    },
+    "skips": {}
   },
   "plan": [
     [
@@ -109,6 +110,19 @@
       0
     ]
   ],
-  "tuned": null,
-  "seconds": 83.2
+  "tuned": {
+    "cq": 2,
+    "rdp": 0,
+    "vw": 0
+  },
+  "code_hash": "519185ae0a7f0c0f9878006b67c5d869a45cd54510a2f9077431b13d2b9e1da7",
+  "versions": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "pandas": "3.0.5",
+    "shapely": "2.2.0",
+    "gpxpy": "1.6.2",
+    "ezdxf": "1.4.5"
+  },
+  "seconds": 57.9
 }
