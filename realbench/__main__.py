@@ -24,7 +24,6 @@ def main(argv=None):
     d.add_argument("--procs", type=int)
     f = sub.add_parser("freeze", help="pre-register a dataset: hash protocol, code, data, tuned settings")
     f.add_argument("dataset")
-    f.add_argument("--confirmatory", action="store_true", help="name this pen-stroke or CAD dataset as the confirmatory one")
     f.add_argument("--amend", metavar="REASON")
     t = sub.add_parser("test", help="run the held-out test split (refuses unless frozen, unchanged and pushed)")
     t.add_argument("dataset")
@@ -45,6 +44,10 @@ def main(argv=None):
                 line += (f" | parsed {st['raw_curves']}, too short {st['too_short']}, duplicates {st['duplicates']}"
                          f" | eligible dev/test {st['eligible']['dev']}/{st['eligible']['test']}"
                          f" | clusters dev/test {st['clusters']['dev']}/{st['clusters']['test']}")
+                if st.get("skips"):
+                    line += f" | skips {st['skips']}"
+                if ds in C.CONFIRMATORY_DATASETS:
+                    line += "  [confirmatory]"
                 if st["clusters"]["test"] < C.MIN_TEST_CLUSTERS:
                     line += "  [below power gate]"
             print(line)
@@ -54,36 +57,21 @@ def main(argv=None):
         sys.exit(0 if run(quick=a.quick) else 1)
 
     elif a.cmd == "dev":
-        from .runner import RESULTS, run_split, tune
-        df, meta = run_split(a.dataset, "dev", procs=a.procs)
-        tuned = tune(df)
-        (RESULTS / "dev" / a.dataset / "tuned.json").write_text(json.dumps(tuned, indent=2))
-        print(f"dev: {meta['n_curves']} curves, {len(df)} rows, {meta['seconds']} s; chosen smoothing c = {tuned['chosen']}")
+        from .runner import run_dev
+        df, meta = run_dev(a.dataset, procs=a.procs)
+        print(f"dev: {meta['n_curves']} curves, {len(df)} rows, {meta['seconds']} s; chosen smoothing c = {meta['tuned']}")
 
     elif a.cmd == "freeze":
         from .lock import freeze
-        from .runner import RESULTS
-        p = RESULTS / "dev" / a.dataset / "tuned.json"
-        if not p.exists():
-            sys.exit(f"run `python -m realbench dev {a.dataset}` first")
-        e = freeze(a.dataset, json.loads(p.read_text())["chosen"], a.confirmatory, a.amend)
+        e = freeze(a.dataset, a.amend)
         print(f"frozen {a.dataset}: confirmatory={e['confirmatory']} code={e['code_hash'][:12]} "
               f"data={e['data_hash'][:12]} tuned={e['tuned']}")
         print("Next: commit realbench/registry.json and push to the public repo BEFORE running the test split.")
 
     elif a.cmd == "test":
-        from .lock import log_run, public_check, verify
-        from .runner import run_split
-        e = verify(a.dataset)
-        issues = public_check()
-        if issues and not a.allow_unpushed:
-            sys.exit("REFUSING test run: " + "; ".join(issues) + " (protocol 4, step 3)")
-        log_run({"event": "start", "dataset": a.dataset, "split": "test", "code_hash": e["code_hash"],
-                 "data_hash": e["data_hash"], "tuned": e["tuned"], "public_issues": issues})
-        df, meta = run_split(a.dataset, "test", tuned=e["tuned"], procs=a.procs)
-        log_run({"event": "done", "dataset": a.dataset, "split": "test", "n_curves": meta["n_curves"],
-                 "rows": len(df), "seconds": meta["seconds"]})
-        print(f"test: {meta['n_curves']} curves, {len(df)} rows. Run `python -m realbench report`.")
+        from .runner import run_test
+        df, meta = run_test(a.dataset, procs=a.procs, allow_unpushed=a.allow_unpushed)
+        print(f"test: {meta['n_curves']} curves, {len(df)} rows ({meta['run_id']}). Run `python -m realbench report`.")
 
     elif a.cmd == "report":
         from .report import build_report

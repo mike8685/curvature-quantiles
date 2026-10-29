@@ -15,7 +15,7 @@ from .metrics import dist_to_polyline
 from .runner import ROOT, run_one
 from .stats import compare, log_ratios
 
-PUBLISHED = {"uniform arc length": "uniform", "Visvalingam--Whyatt": "vw", "RDP (fixed $K$)": "rdp",
+PUBLISHED = {r"CQ $p{=}1,\beta{=}1$": "cq_p1", "uniform arc length": "uniform", "Visvalingam--Whyatt": "vw", "RDP (fixed $K$)": "rdp",
              r"CQ $p{=}\frac12$": "cq_unpinned", r"CQ $p{=}\frac12$, pinned": "cq",
              r"CQ $p{=}\frac12$, snapped": "_paper_snapped_unpinned", "optimal vertex subset": "oracle"}
 
@@ -122,7 +122,7 @@ def check_on_curve_and_c0(curves, log):
         pts = cv.pts
         K = max(8, len(pts) // 10)
         for c in (0, 4):
-            sm = gaussian_smooth(pts, c)
+            sm = gaussian_smooth(pts, c, closed=cv.closed)
             for m in ("cq", "rdp", "vw", "uniform", "cq_unpinned", "cq_snapped", "cq_p1"):
                 r = run_one(pts, cv.closed, m, K, c, sm)
                 d = dist_to_polyline(r["_out"], pts).max()
@@ -139,14 +139,49 @@ def check_on_curve_and_c0(curves, log):
 
 
 def check_smoothing(log):
+    from curvquant.core import turning_angles
     rng = np.random.default_rng(3)
-    t = np.linspace(0, 2 * np.pi, 400)
+    t = np.linspace(0, 2 * np.pi, 401)
     clean = np.column_stack([np.cos(t), np.sin(t)])
     noisy = clean + rng.normal(0, 0.01, clean.shape)
+    noisy[-1] = noisy[0]
     e0 = np.hypot(*(noisy - clean).T).mean()
-    e4 = np.hypot(*(gaussian_smooth(noisy, 4) - clean).T).mean()
+    e4 = np.hypot(*(gaussian_smooth(noisy, 4, closed=True) - clean).T).mean()
     ok = e4 < 0.6 * e0 and np.array_equal(gaussian_smooth(noisy, 0), noisy)
     log(ok, f"smoothing reduces noise (mean deviation {e0:.4f} -> {e4:.4f}) and c = 0 is the identity")
+    # no artificial curvature at a closed seam or at open ends (review finding 4)
+    _, wc = turning_angles(gaussian_smooth(clean, 16, closed=True), closed=True)
+    a = np.linspace(0, 2, 300)
+    arc = np.column_stack([np.cos(a), np.sin(a)])
+    _, wa = turning_angles(gaussian_smooth(arc, 16))
+    seam, ends = wc.max() / np.median(wc), (wa.max() / np.median(wa), wa.min() / np.median(wa))
+    ok2 = seam < 1.1 and 0.9 < ends[1] and ends[0] < 1.1
+    log(ok2, f"smoothing adds no boundary curvature: circle seam max/median turning {seam:.3f}, "
+             f"open arc max/min vs median {ends[0]:.3f}/{ends[1]:.3f}")
+    return ok and ok2
+
+
+def check_exact_fit_ties(log):
+    """Polygons that every vertex method fits exactly must tie, not produce rounding-noise ratios."""
+    from .datasets import _line, _uniform_with_corners
+    from .stats import compare, log_ratios
+    rng = np.random.default_rng(5)
+    rows = []
+    for i in range(20):
+        k = int(rng.integers(4, 7))
+        ang = np.sort(rng.uniform(0, 2 * np.pi, k))
+        verts = np.column_stack([np.cos(ang), np.sin(ang)]) * rng.uniform(1, 3)
+        verts = np.vstack([verts, verts[:1]])
+        pts = _uniform_with_corners([_line(verts[j], verts[j + 1]) for j in range(k)])
+        pts[-1] = pts[0]
+        for m in ("rdp", "vw"):
+            r = run_one(pts, True, m, 20, 0, pts)
+            rows.append({"curve_id": f"p{i}", "cluster": f"p{i}", "K": 20, "method": m, "c": 0,
+                         "diam": diameter(pts), "hausdorff": r["hausdorff"]})
+    df = pd.DataFrame(rows)
+    res = compare(log_ratios(df, "rdp", "vw", 0, 0, "hausdorff"))
+    ok = res["exact_both"] == 20 and abs(res["gmr"] - 1) < 1e-12
+    log(ok, f"exact fits tie: {res['exact_both']}/20 polygons exact for both RDP and VW, GMR {res['gmr']:.6f}")
     return ok
 
 
@@ -156,17 +191,13 @@ def check_splits(log):
         if not raw_files(ds):
             continue
         st = {}
-        dev = load_split(ds, "dev", cap=10 ** 9, stats=st)
-        test_clusters = set()
-        # recompute test clusters without keeping curves (cap 0)
-        st2 = {}
-        load_split(ds, "test", cap=0, stats=st2)
-        from .datasets import split_of
-        overlap = {c.cluster for c in dev if split_of(ds, c.cluster) != "dev"}
+        load_split(ds, "test", cap=0, stats=st)
+        ids = st["_cluster_ids"]
+        overlap = ids["dev"] & ids["test"]
         ok &= not overlap
         msgs.append(f"{ds}: dev {st['eligible']['dev']} curves / {st['clusters']['dev']} clusters, "
                     f"test {st['eligible']['test']} / {st['clusters']['test']}")
-    log(ok, "cluster-level split has no dev/test overlap; " + "; ".join(msgs))
+    log(ok, "no cluster in both dev and test (test geometry parsed for counts only); " + "; ".join(msgs))
     return ok
 
 
@@ -186,7 +217,7 @@ def run(quick: bool = False) -> bool:
         synth.append(Curve("synthetic", fam, fam, gen(240), closed))
     dev = _dev_curves()
     curves = synth + dev
-    print(f"selfcheck on {len(synth)} synthetic + {len(dev)} dev curves (no test data is read)")
+    print(f"selfcheck on {len(synth)} synthetic + {len(dev)} dev curves (no method is ever run on test curves)")
     if not quick:
         check_reproduction(log)
     check_oracle_bound(curves, log)
@@ -194,5 +225,6 @@ def run(quick: bool = False) -> bool:
     check_invariance(curves, log)
     check_on_curve_and_c0(curves, log)
     check_smoothing(log)
+    check_exact_fit_ties(log)
     check_splits(log)
     return all(results)

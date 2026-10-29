@@ -28,7 +28,8 @@ METHODS = {
     "uniform": lambda p, K, closed: uniform_arclength(p, K, closed),
     "cq_unpinned": lambda p, K, closed: _cq(p, K, closed),
     "cq_snapped": lambda p, K, closed: _cq(p, K, closed, pin_corners=True, snap_to_vertices=True),
-    "cq_p1": lambda p, K, closed: quantile_resample(p, K, beta=None, p=1.0, closed=closed),
+    # the preprint's naive row: equal quantiles of turning (p = 1) blended with arc length (beta = 1)
+    "cq_p1": lambda p, K, closed: quantile_resample(p, K, beta=1.0, p=1.0, closed=closed),
     "oracle": lambda p, K, closed: optimal_subset_min_eps(p, K)[0],
     # the preprint's "snapped" row snapped the UNPINNED variant; kept only so selfcheck can
     # reproduce that published row (not part of any run plan)

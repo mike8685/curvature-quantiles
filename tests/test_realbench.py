@@ -99,9 +99,9 @@ def test_stats_identity_symmetry_and_decisions():
     ba = compare(log_ratios(df, "rdp", "cq", 0, 0, "hausdorff"))
     assert ab["gmr"] * ba["gmr"] == pytest.approx(1.0)
     assert ab["n_clusters"] == 25
-    assert decide({"gmr": 0.5, "ci_lo": 0.4, "ci_hi": 0.6, "p": 1e-6}) == "CQ better"
-    assert decide({"gmr": 1.0, "ci_lo": 0.97, "ci_hi": 1.03, "p": 0.5}) == "practically equivalent"
-    assert decide({"gmr": 1.2, "ci_lo": 0.9, "ci_hi": 1.5, "p": 0.2}) == "inconclusive"
+    assert decide({"gmr": 0.5, "ci_bonf_lo": 0.4, "ci_bonf_hi": 0.6, "ci_tost_lo": 0.4, "ci_tost_hi": 0.6, "p": 1e-6}) == "CQ better"
+    assert decide({"gmr": 1.0, "ci_bonf_lo": 0.9, "ci_bonf_hi": 1.1, "ci_tost_lo": 0.97, "ci_tost_hi": 1.03, "p": 0.5}) == "practically equivalent"
+    assert decide({"gmr": 1.2, "ci_bonf_lo": 0.9, "ci_bonf_hi": 1.5, "ci_tost_lo": 0.95, "ci_tost_hi": 1.4, "p": 0.2}) == "inconclusive"
     h = holm({"a": 0.001, "b": 0.04}, 18)
     assert h["a"] == pytest.approx(0.018) and h["b"] == pytest.approx(0.68)
 
@@ -110,3 +110,49 @@ def test_split_is_deterministic_and_cluster_based():
     assert split_of("gpx", "file1.gpx") == split_of("gpx", "file1.gpx")
     frac = np.mean([split_of("x", f"c{i}") == "dev" for i in range(20000)])
     assert abs(frac - C.DEV_FRACTION) < 0.02
+
+
+def test_exact_fits_tie_instead_of_rounding_ratios():
+    df = pd.DataFrame([
+        {"curve_id": "a", "cluster": "a", "K": 8, "method": "cq", "c": 0, "diam": 1.0, "hausdorff": 2e-16},
+        {"curve_id": "a", "cluster": "a", "K": 8, "method": "rdp", "c": 0, "diam": 1.0, "hausdorff": 1e-16},
+        {"curve_id": "b", "cluster": "b", "K": 8, "method": "cq", "c": 0, "diam": 1.0, "hausdorff": 0.0},
+        {"curve_id": "b", "cluster": "b", "K": 8, "method": "rdp", "c": 0, "diam": 1.0, "hausdorff": 3e-16},
+    ])
+    lr = log_ratios(df, "cq", "rdp", 0, 0, "hausdorff")
+    assert (lr.lr == 0).all() and lr.exact_a.all() and lr.exact_b.all()
+
+
+def test_smoothing_has_no_boundary_curvature():
+    from curvquant.core import turning_angles
+    t = np.linspace(0, 2 * np.pi, 401)
+    circ = np.column_stack([np.cos(t), np.sin(t)])
+    _, w = turning_angles(gaussian_smooth(circ, 16, closed=True), closed=True)
+    assert w.max() / np.median(w) < 1.1
+    a = np.linspace(0, 2, 300)
+    _, w = turning_angles(gaussian_smooth(np.column_stack([np.cos(a), np.sin(a)]), 16))
+    assert 0.9 < w.min() / np.median(w) and w.max() / np.median(w) < 1.1
+
+
+def test_uji_ids_unique_and_writer_clusters(tmp_path, monkeypatch):
+    (tmp_path / "uji").mkdir()
+    lines = []
+    for sess in ("trn_UJI_W03-01", "trn_UJI_W04-01"):
+        for ch in ("a", "a", "b"):
+            lines += [f"WORD {ch} {sess}", "  NUMSTROKES 2",
+                      "  POINTS 3 # 0 0 1 1 2 0", "  POINTS 3 # 5 5 6 6 7 5"]
+    (tmp_path / "uji" / "ujipenchars2.txt").write_text("\n".join(lines))
+    monkeypatch.setenv("REALBENCH_DATA", str(tmp_path))
+    from realbench.datasets import DATASETS
+    cs = list(DATASETS["uji"].loader())
+    ids = [c.curve_id for c in cs]
+    assert len(ids) == 12 and len(set(ids)) == 12
+    assert {c.cluster for c in cs} == {"W03", "W04"}
+
+
+def test_test_split_refuses_without_freeze(monkeypatch):
+    from realbench import lock
+    monkeypatch.setattr(lock, "REGISTRY", lock.HERE / "no-such-registry.json")
+    from realbench.runner import run_test
+    with pytest.raises(SystemExit):
+        run_test("ne_roads", allow_unpushed=True)
