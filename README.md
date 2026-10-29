@@ -42,6 +42,21 @@ cd paper && latexmk -pdf main.tex
 
 Every number in the paper is read from `paper/generated/numbers.tex`, which `run_all.py` writes. Nothing is typed in by hand.
 
+## Real-data benchmark (pre-registered, in progress)
+
+`realbench/` tests the resampling claim on real curves: Natural Earth maps, GPX tracks, pen strokes and CAD outlines. The plan is fixed in [`realbench/PROTOCOL.md`](realbench/PROTOCOL.md) before any held-out result exists. Raw data layout is described in [`data/README.md`](data/README.md).
+
+```bash
+pip install -e ".[realdata]"
+python -m realbench datasets          # what data is present; eligible curves and clusters per split
+python -m realbench selfcheck         # protocol section 6 checks (synthetic + dev data only)
+python -m realbench dev ne_rivers     # dev split: all methods, tune smoothing
+python -m realbench freeze ne_rivers  # hash protocol, code, data, tuned settings -> realbench/registry.json
+git commit -am "freeze ne_rivers" && git push   # public timestamp = the pre-registration
+python -m realbench test ne_rivers    # refuses if anything changed since the freeze or it was not pushed
+python -m realbench report            # every pre-registered result, wins and losses
+```
+
 ## What holds up and what doesn't
 
 Verified by this code:
