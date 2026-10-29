@@ -340,8 +340,10 @@ Those runs used v1.0's per-feature clusters, edge-pinned smoothing and
 zero-only error floor. They are superseded by the v1.1 dev runs below, which are
 committed alongside this version.
 
-- 2026-10-29, v1.1 dev runs, 150 curves each, GMR CQ/RDP. In all three, CQ was
-  worse than RDP on every comparison.
+- 2026-10-29, v1.1 dev runs, 150 curves each (GMR = CQ error / baseline error).
+  CQ was worse than RDP on all three datasets, untuned and tuned. Against VW it
+  was worse on rivers and roads, and close on coastline (1.12; the Bonferroni
+  interval includes 1).
 
   | dataset | H1 | H2 (vs VW) | tuned H3 | chosen c (cq / rdp / vw) | pinning off at c = 0 (no corner / more than K-2) |
   | --- | --- | --- | --- | --- | --- |
