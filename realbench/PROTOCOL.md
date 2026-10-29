@@ -343,15 +343,15 @@ committed alongside this version.
 - 2026-10-29, v1.1 dev runs, 150 curves each, GMR CQ/RDP. In all three, CQ was
   worse than RDP on every comparison.
 
-  | dataset | H1 | H2 (vs VW) | tuned H3 | chosen c (cq / rdp / vw) | corner pinning switched off |
+  | dataset | H1 | H2 (vs VW) | tuned H3 | chosen c (cq / rdp / vw) | pinning off at c = 0 (no corner / more than K-2) |
   | --- | --- | --- | --- | --- | --- |
-  | `ne_coastline` | 1.80 | 1.12 | 1.66 | 4 / 0 / 0 | 84% of cq runs |
-  | `ne_rivers` | 1.94 | 1.45 | 1.55 | 4 / 0 / 1 | 70% of cq runs |
-  | `ne_roads` | 1.74 | 1.52 | 1.39 | 2 / 0 / 0 | 60% of cq runs |
+  | `ne_coastline` | 1.80 | 1.12 | 1.66 | 4 / 0 / 0 | 98% (0% / 98%) |
+  | `ne_rivers` | 1.94 | 1.45 | 1.55 | 4 / 0 / 1 | 83% (0% / 83%) |
+  | `ne_roads` | 1.74 | 1.52 | 1.39 | 2 / 0 / 0 | 72% (21% / 51%) |
 
-  Pinning switches off mostly because these coarse polylines have more than K-2
-  corners above pi/6. The method is **not** being changed in response. Any
-  modified CQ variant would be a new method, needing new data or a new
+  Pinning mostly switches off because these coarse polylines have more than
+  K-2 corners above pi/6. The method is **not** being changed in response. Any
+    modified CQ variant would be a new method, needing new data or a new
   pre-registration.
 
 **What changed after those results were seen (v1.0 to v1.1).** Every change

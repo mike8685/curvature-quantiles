@@ -52,7 +52,7 @@ Failure rates (fallback to uniform): none
 
 Mean point shortfall below K: none
 
-Share of cq runs where corner pinning switched off (no corner, or more than K-2): 60.0%
+Share of cq runs (c = 0) where corner pinning switched off (no corner, or more than K-2): 97.6%
 
 Median runtime ms (Python, indicative): cq@c0 0.36, cq@c1 0.34, cq@c2 0.44, cq@c4 0.44, cq@c8 0.36, cq@c16 0.35, cq_p1@c0 0.27, cq_snapped@c0 0.40, cq_unpinned@c0 0.34, oracle@c0 9.01, rdp@c0 0.28, rdp@c1 0.29, rdp@c2 0.27, rdp@c4 0.26, rdp@c8 0.28, rdp@c16 0.27, uniform@c0 0.10, vw@c0 0.82, vw@c1 0.80, vw@c2 0.79, vw@c4 0.79, vw@c8 0.75, vw@c16 0.79
 
@@ -104,7 +104,7 @@ Failure rates (fallback to uniform): none
 
 Mean point shortfall below K: none
 
-Share of cq runs where corner pinning switched off (no corner, or more than K-2): 70.0%
+Share of cq runs (c = 0) where corner pinning switched off (no corner, or more than K-2): 83.0%
 
 Median runtime ms (Python, indicative): cq@c0 0.37, cq@c1 0.39, cq@c2 0.49, cq@c4 0.34, cq@c8 0.31, cq@c16 0.32, cq_p1@c0 0.26, cq_snapped@c0 0.40, cq_unpinned@c0 0.32, oracle@c0 48.73, rdp@c0 0.32, rdp@c1 0.33, rdp@c2 0.34, rdp@c4 0.33, rdp@c8 0.32, rdp@c16 0.32, uniform@c0 0.10, vw@c0 1.51, vw@c1 1.53, vw@c2 1.53, vw@c4 1.55, vw@c8 1.54, vw@c16 1.55
 
@@ -156,6 +156,6 @@ Failure rates (fallback to uniform): none
 
 Mean point shortfall below K: {'cq_snapped@c0': 0.003367003367003367}
 
-Share of cq runs where corner pinning switched off (no corner, or more than K-2): 84.3%
+Share of cq runs (c = 0) where corner pinning switched off (no corner, or more than K-2): 71.7%
 
 Median runtime ms (Python, indicative): cq@c0 0.33, cq@c1 0.34, cq@c2 0.29, cq@c4 0.28, cq@c8 0.28, cq@c16 0.28, cq_p1@c0 0.24, cq_snapped@c0 0.37, cq_unpinned@c0 0.29, oracle@c0 4.77, rdp@c0 0.22, rdp@c1 0.22, rdp@c2 0.22, rdp@c4 0.23, rdp@c8 0.23, rdp@c16 0.22, uniform@c0 0.09, vw@c0 0.49, vw@c1 0.48, vw@c2 0.48, vw@c4 0.47, vw@c8 0.47, vw@c16 0.46

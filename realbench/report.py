@@ -131,7 +131,7 @@ def build_report(split: str = "test") -> str:
         conf = bool(meta.get("confirmatory")) and split == "test"
         res["confirmatory_dataset"] = conf
         res["power_ok"] = all(r["n_clusters"] >= C.MIN_TEST_CLUSTERS for r in res["confirmatory"].values())
-        res["pin_inactive"] = float(1 - df[df.method == "cq"].pin_active.mean()) if "pin_active" in df else float("nan")
+        res["pin_inactive"] = float(1 - df[(df.method == "cq") & (df.c == 0)].pin_active.mean()) if "pin_active" in df else float("nan")
         results[ds] = (res, meta, notes)
         if conf:
             for hid, r in res["confirmatory"].items():
@@ -169,7 +169,7 @@ def build_report(split: str = "test") -> str:
                   "worse as the property grows): " + ", ".join(f"{k} {v:+.2f}" for k, v in res.get("correlates", {}).items()), "",
                   f"Failure rates (fallback to uniform): {res['failures'] or 'none'}", "",
                   f"Mean point shortfall below K: {res['shortfall'] or 'none'}", "",
-                  f"Share of cq runs where corner pinning switched off (no corner, or more than K-2): "
+                  f"Share of cq runs (c = 0) where corner pinning switched off (no corner, or more than K-2): "
                   f"{res['pin_inactive']:.1%}", "",
                   "Median runtime ms (Python, indicative): " + ", ".join(
                       f"{k} {v:.2f}" for k, v in res["runtime_ms"].items()), ""]
