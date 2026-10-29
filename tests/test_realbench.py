@@ -150,6 +150,19 @@ def test_uji_ids_unique_and_writer_clusters(tmp_path, monkeypatch):
     assert {c.cluster for c in cs} == {"W03", "W04"}
 
 
+def test_omniglot_strokes_split_on_break_and_cluster_by_character(tmp_path, monkeypatch):
+    d = tmp_path / "omniglot" / "strokes_background" / "Latin" / "character01"
+    d.mkdir(parents=True)
+    (d / "0001_01.txt").write_text("START\n0,0,0\n1,0,5\n2,1,9\nBREAK\n5,5,20\n6,6,25\n")
+    (d / "0001_02.txt").write_text("START\n0,0,0\n1,1,5\nbad,line\n")
+    monkeypatch.setenv("REALBENCH_DATA", str(tmp_path))
+    from realbench.datasets import DATASETS
+    cs = list(DATASETS["omniglot"].loader())
+    assert [len(c.pts) for c in cs] == [3, 2, 2]
+    assert {c.cluster for c in cs} == {"Latin/character01"}
+    assert len({c.curve_id for c in cs}) == 3
+
+
 def test_test_split_refuses_without_freeze(monkeypatch):
     from realbench import lock
     monkeypatch.setattr(lock, "REGISTRY", lock.HERE / "no-such-registry.json")

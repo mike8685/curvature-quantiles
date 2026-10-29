@@ -159,3 +159,55 @@ Mean point shortfall below K: {'cq_snapped@c0': 0.003367003367003367}
 Share of cq runs (c = 0) where corner pinning switched off (no corner, or more than K-2): 71.7%
 
 Median runtime ms (Python, indicative): cq@c0 0.33, cq@c1 0.34, cq@c2 0.29, cq@c4 0.28, cq@c8 0.28, cq@c16 0.28, cq_p1@c0 0.24, cq_snapped@c0 0.37, cq_unpinned@c0 0.29, oracle@c0 4.77, rdp@c0 0.22, rdp@c1 0.22, rdp@c2 0.22, rdp@c4 0.23, rdp@c8 0.23, rdp@c16 0.22, uniform@c0 0.09, vw@c0 0.49, vw@c1 0.48, vw@c2 0.48, vw@c4 0.47, vw@c8 0.47, vw@c16 0.46
+
+## omniglot (exploratory)
+
+150 curves; eligible dev/test = {'dev': 14912, 'test': 33547}; clusters dev/test = {'dev': 494, 'test': 1126}; too short 30983, duplicates 21; loader skips none; tuned c = {'cq': 0, 'rdp': 0, 'vw': 0}
+
+| test | comparison | GMR | 95% CI | Bonferroni CI | p | win / loss | clusters / curves | exact fits both / A only / B only | Holm p | decision |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| H1 | cq vs rdp (c0) | 2.916 | [2.041, 4.453] | [1.712, 5.730] | 9.3e-19 | 4% / 89% | 128 / 150 (9 tied) | 23 / 2 / 11 |  | (CQ worse; exploratory) |
+| H2 | cq vs vw (c0) | 1.720 | [1.074, 2.803] | [0.832, 3.697] | 2.1e-09 | 20% / 73% | 128 / 150 (9 tied) | 20 / 5 / 10 |  | (inconclusive; exploratory) |
+| H3 | cq vs rdp (tuned) | 2.916 | [2.041, 4.453] | [1.712, 5.730] | 9.3e-19 | 4% / 89% | 128 / 150 (9 tied) | 23 / 2 / 11 |  | (CQ worse; exploratory) |
+
+Secondary metrics (same comparisons):
+
+| comparison | GMR | 95% CI | Bonferroni CI | p | win / loss | clusters / curves | exact fits both / A only / B only |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| H1/rmse | 3.221 | [2.298, 4.791] | [1.975, 6.044] | 7e-19 | 2% / 91% | 128 / 150 (9 tied) | 23 / 2 / 11 |
+| H1/shortcut | 3.959 | [2.617, 6.444] | [2.255, 8.761] | 1.6e-20 | 3% / 91% | 128 / 150 (8 tied) | 19 / 0 / 15 |
+| H2/rmse | 2.308 | [1.488, 3.628] | [1.175, 4.685] | 4.8e-14 | 10% / 83% | 128 / 150 (9 tied) | 20 / 5 / 10 |
+| H2/shortcut | 2.340 | [1.515, 3.863] | [1.258, 5.313] | 1.5e-10 | 20% / 74% | 128 / 150 (8 tied) | 18 / 1 / 12 |
+| H3/rmse | 3.221 | [2.298, 4.791] | [1.975, 6.044] | 7e-19 | 2% / 91% | 128 / 150 (9 tied) | 23 / 2 / 11 |
+| H3/shortcut | 3.959 | [2.617, 6.444] | [2.255, 8.761] | 1.6e-20 | 3% / 91% | 128 / 150 (8 tied) | 19 / 0 / 15 |
+
+Ablations and baselines vs RDP (c = 0):
+
+| comparison | GMR | 95% CI | Bonferroni CI | p | win / loss | clusters / curves | exact fits both / A only / B only |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| vw | 1.695 | [1.337, 2.305] | [1.255, 2.833] | 3.9e-18 | 7% / 82% | 128 / 150 (14 tied) | 30 / 0 / 4 |
+| uniform | 9.683 | [4.730, 21.239] | [3.568, 34.953] | 2.1e-22 | 1% / 98% | 128 / 150 (2 tied) | 6 / 0 / 28 |
+| cq_unpinned | 7.785 | [4.252, 15.128] | [3.326, 22.318] | 4.5e-21 | 2% / 96% | 128 / 150 (2 tied) | 7 / 0 / 27 |
+| cq_snapped | 2.193 | [1.755, 2.769] | [1.557, 3.147] | 2.7e-18 | 2% / 88% | 128 / 150 (12 tied) | 30 / 2 / 4 |
+| cq_p1 | 8.830 | [4.629, 18.075] | [3.578, 27.846] | 6.3e-21 | 2% / 97% | 128 / 150 (2 tied) | 6 / 0 / 28 |
+
+Ratio to optimal vertex subset (shortcut error, N <= 800):
+
+| comparison | GMR | 95% CI | Bonferroni CI | p | win / loss | clusters / curves | exact fits both / A only / B only |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| cq | 5.873 | [3.902, 9.525] | [3.277, 12.760] | 2e-21 | 0% / 94% | 128 / 150 (8 tied) | 19 / 0 / 17 |
+| rdp | 1.483 | [1.353, 1.688] | [1.324, 1.832] | 6.1e-21 | 0% / 91% | 128 / 150 (11 tied) | 34 / 0 / 2 |
+| vw | 2.510 | [1.930, 3.471] | [1.755, 4.210] | 6.1e-21 | 0% / 91% | 128 / 150 (11 tied) | 30 / 0 / 6 |
+| cq_snapped | 3.267 | [2.740, 4.008] | [2.551, 4.557] | 6.1e-21 | 0% / 91% | 128 / 150 (11 tied) | 32 / 0 / 4 |
+
+GMR by actual budget fraction K/N (clusters): H1: <=3% 1.121 (2), 3-7% 1.788 (38), 7-15% 2.544 (97), >15% 3.850 (128); H2: <=3% 0.811 (2), 3-7% 1.190 (38), 7-15% 1.503 (97), >15% 1.722 (128); H3: <=3% 1.121 (2), 3-7% 1.788 (38), 7-15% 2.544 (97), >15% 3.850 (128)
+
+Spearman correlation of H1 per-curve log ratio with curve properties (positive = CQ relatively worse as the property grows): N +0.28, turning +0.22, straight -0.16, kn -0.28
+
+Failure rates (fallback to uniform): {'cq@c0': 0.015665796344647518, 'cq_snapped@c0': 0.015665796344647518, 'cq_unpinned@c0': 0.015665796344647518}
+
+Mean point shortfall below K: {'cq_snapped@c0': 0.3289817232375979}
+
+Share of cq runs (c = 0) where corner pinning switched off (no corner, or more than K-2): 91.4%
+
+Median runtime ms (Python, indicative): cq@c0 0.41, cq@c1 0.54, cq@c2 0.43, cq@c4 0.40, cq@c8 0.39, cq@c16 0.37, cq_p1@c0 0.31, cq_snapped@c0 0.45, cq_unpinned@c0 0.35, oracle@c0 15.99, rdp@c0 0.30, rdp@c1 0.32, rdp@c2 0.34, rdp@c4 0.32, rdp@c8 0.34, rdp@c16 0.34, uniform@c0 0.12, vw@c0 1.08, vw@c1 1.06, vw@c2 1.08, vw@c4 1.04, vw@c8 1.10, vw@c16 1.08

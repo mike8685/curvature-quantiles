@@ -177,6 +177,42 @@ def load_quickdraw_raw(pattern: str = "quickdraw/*.ndjson"):
     return gen
 
 
+def load_omniglot(pattern: str = "omniglot/strokes_*/*/*/*.txt"):
+    """Omniglot raw pen strokes (Lake et al. 2015, MIT licence): 1623 characters x 20 drawers.
+
+    File = one drawing of one character: ``START``, then ``x,y,t`` rows, ``BREAK`` between
+    pen strokes. Each pen stroke is one open polyline (time is ignored). Both the
+    background and evaluation sets are read whole. Cluster = alphabet/character, so all 20
+    drawings of a character share a split. Coordinates are snapped to whole pixels by the
+    collection tool, so these strokes carry quantisation noise by construction.
+    """
+    def gen():
+        for fp in sorted(glob.glob(str(data_root() / pattern))):
+            p = Path(fp)
+            char = f"{p.parent.parent.name}/{p.parent.name}"
+            strokes, cur = [], []
+            for line in p.read_text().splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                if line in ("START", "BREAK"):
+                    if cur:
+                        strokes.append(cur)
+                    cur = []
+                    continue
+                v = line.split(",")
+                try:
+                    cur.append((float(v[0]), float(v[1])))
+                except (ValueError, IndexError):
+                    SKIPS["omniglot malformed line"] += 1
+            if cur:
+                strokes.append(cur)
+            for si, st in enumerate(strokes):
+                if len(st) >= 2:
+                    yield Curve("", f"{char}/{p.stem}#{si}", char, np.array(st, dtype=np.float64), False)
+    return gen
+
+
 def load_inkml(pattern: str = "inkml/**/*.inkml"):
     """InkML traces (CROHME, MathWriting). X/Y channels read from <traceFormat> when given.
 
@@ -470,6 +506,8 @@ DATASETS = {d.id: d for d in [
     Dataset("gpx", "GPS", load_gpx(), "GPX track segments (metres); exploratory only", "gpx/**/*.gpx"),
     Dataset("quickdraw_raw", "pen strokes", load_quickdraw_raw(), "Google Quick Draw raw strokes, 10 fixed categories",
             "quickdraw/*.ndjson"),
+    Dataset("omniglot", "pen strokes", load_omniglot(), "Omniglot raw pen strokes, all 50 alphabets",
+            "omniglot/strokes_*/*/*/*.txt"),
     Dataset("inkml", "pen strokes", load_inkml(), "InkML handwriting traces (CROHME / MathWriting)",
             "inkml/**/*.inkml"),
     Dataset("uji", "pen strokes", load_uji(), "UJI Pen Characters v2 strokes", "uji/*.txt"),

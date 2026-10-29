@@ -356,6 +356,23 @@ committed alongside this version.
     modified CQ variant would be a new method, needing new data or a new
   pre-registration.
 
+- 2026-10-29 (after the v1.1 map runs), `omniglot` dev, added as an **exploratory**
+  dataset (loader `load_omniglot`, MIT-licensed strokes from
+  github.com/brendenlake/omniglot, all 50 alphabets, cluster = character). It was
+  chosen because it is reachable and citable, before any method had run on it.
+  Only the dev split was run, 150 strokes. The `datasets` command parses test
+  geometry for counts only; no method has run on any Omniglot test stroke.
+  GMR = CQ error / baseline error, Hausdorff: H1 2.92 [Bonferroni 1.71, 5.73],
+  H2 1.72 [0.83, 3.70], tuned H3 2.92 (every method chose c = 0). CQ beat RDP on
+  4% of curves and lost on 89%. Relative to the optimal vertex subset (shortcut
+  error): RDP 1.48, VW 2.51, CQ 5.87. Pinning was off in 91.4% of CQ runs. The
+  gap widens with the budget fraction K/N (H1 GMR 1.12 for K/N <= 3% with only 2
+  clusters, 3.85 for K/N > 15%). Strokes have a median of about 47 points, so the
+  fixed budgets (floor K = 8) put most of them in the high K/N regime. The method
+  is **not** being changed in response. Making `omniglot` the confirmatory
+  pen-stroke dataset in place of `quickdraw_raw` is a pending amendment that will
+  be recorded here before any freeze.
+
 **What changed after those results were seen (v1.0 to v1.1).** Every change
 below came from an independent adversarial review of the harness. None is a
 change to the hypotheses, the primary metric, the budgets or the methods.

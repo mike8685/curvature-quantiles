@@ -17,6 +17,7 @@ The six confirmatory datasets are fixed in `realbench/config.py`. Download each 
 | `quickdraw/<category>.ndjson` | `quickdraw_raw` (confirmatory) | `gs://quickdraw_dataset/full/raw/<category>.ndjson` for exactly: moustache, sun, binoculars, stop sign, paint can, strawberry, crocodile, bandage, ambulance, nose | **raw** files only; `simplified` files are refused; other categories are ignored |
 | `fusion360/**/*.json` | `fusion360` (confirmatory) | Fusion 360 Gallery "reconstruction" dataset (github.com/AutodeskAILab/Fusion360GalleryDataset, download link in its README) | all design JSON files; loops with splines are skipped and counted |
 | `gpx/**/*.gpx` | `gpx` (exploratory) | gpxpy `test_files/` | parser fixtures, not a sample |
+| `omniglot/strokes_{background,evaluation}/<alphabet>/<character>/*.txt` | `omniglot` (exploratory) | github.com/brendenlake/omniglot, `python/strokes_background.zip` and `strokes_evaluation.zip` (MIT) | 1623 characters x 20 drawers; cluster = character; strokes are pixel-quantised |
 | `inkml/**/*.inkml` | `inkml` (exploratory) | CROHME (Zenodo record 8428035) or Google MathWriting | |
 | `uji/*.txt` | `uji` (exploratory) | UCI "UJI Pen Characters (Version 2)", `ujipenchars2.txt` | |
 | `dxf/**/*.dxf` | `dxf` (exploratory) | any DXF corpus | |
