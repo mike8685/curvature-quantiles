@@ -62,10 +62,11 @@ python -m realbench report            # every pre-registered result, wins and lo
 Verified by this code:
 - Closed-form curvature medians on convex graphs; the median at an inflection is square-root sensitive to boundary-slope mismatch.
 - Profile distance = Wasserstein-1, exactly similarity- and reparameterization-invariant; on convex arcs it equals the normalized turning-function distance.
-- Quantile resampling with p = 1/2 beats fixed-K RDP on clean curves (geometric-mean error ratio ≈ 0.72 over 45 family/budget pairs) and lands within ≈1.3× of the optimal vertex subset.
+- On nine **synthetic**, noise-free curve families of 1000 points each, quantile resampling with p = 1/2 beats fixed-K RDP (geometric-mean error ratio ≈ 0.72 over 45 family/budget pairs) and lands within ≈1.3× of the optimal vertex subset. This is a statement about those synthetic curves only.
 
 Not supported:
 - Under measurement noise, smoothed RDP beats quantile resampling in every case tested.
+- Any claim about real data. Preliminary development-split runs of the real-data benchmark (`realbench/`, branch `realbench`) show quantile resampling losing to RDP on maps, pen strokes and one GPS run. The pre-registered test is not yet run; see `realbench/PROTOCOL.md` section 8.
 - As a stroke classifier the unsigned profile distance is weaker than the signed turning function under strong perturbation.
 - The profile distance ignores the sign of curvature (an S and a U can be at distance 0) and depends on the start point for closed curves.
 
