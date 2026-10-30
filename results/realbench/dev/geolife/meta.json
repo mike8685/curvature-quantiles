@@ -1,0 +1,128 @@
+{
+  "dataset": "geolife",
+  "split": "dev",
+  "n_curves": 150,
+  "load_stats": {
+    "raw_curves": 18670,
+    "too_short": 1234,
+    "duplicates": 825,
+    "eligible": {
+      "dev": 5323,
+      "test": 11288
+    },
+    "clusters": {
+      "dev": 46,
+      "test": 123
+    },
+    "skips": {}
+  },
+  "plan": [
+    [
+      "cq",
+      0
+    ],
+    [
+      "cq",
+      1
+    ],
+    [
+      "cq",
+      2
+    ],
+    [
+      "cq",
+      4
+    ],
+    [
+      "cq",
+      8
+    ],
+    [
+      "cq",
+      16
+    ],
+    [
+      "rdp",
+      0
+    ],
+    [
+      "rdp",
+      1
+    ],
+    [
+      "rdp",
+      2
+    ],
+    [
+      "rdp",
+      4
+    ],
+    [
+      "rdp",
+      8
+    ],
+    [
+      "rdp",
+      16
+    ],
+    [
+      "vw",
+      0
+    ],
+    [
+      "vw",
+      1
+    ],
+    [
+      "vw",
+      2
+    ],
+    [
+      "vw",
+      4
+    ],
+    [
+      "vw",
+      8
+    ],
+    [
+      "vw",
+      16
+    ],
+    [
+      "uniform",
+      0
+    ],
+    [
+      "cq_unpinned",
+      0
+    ],
+    [
+      "cq_snapped",
+      0
+    ],
+    [
+      "cq_p1",
+      0
+    ],
+    [
+      "oracle",
+      0
+    ]
+  ],
+  "tuned": {
+    "cq": 4,
+    "rdp": 0,
+    "vw": 0
+  },
+  "code_hash": "61c9d02c555765b4f2f30eec12979ee516381189d3875d022bc90699ed4cfb5f",
+  "versions": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "pandas": "3.0.5",
+    "shapely": "2.2.0",
+    "gpxpy": "1.6.2",
+    "ezdxf": "1.4.5"
+  },
+  "seconds": 345.8
+}

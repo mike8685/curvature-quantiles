@@ -373,6 +373,20 @@ committed alongside this version.
   pen-stroke dataset in place of `quickdraw_raw` is a pending amendment that will
   be recorded here before any freeze.
 
+- 2026-10-30, `geolife` dev (confirmatory dataset, practice split only), full GeoLife
+  1.3 corpus: 18,670 trajectories, 182 users, 1,234 too short, 825 duplicates,
+  eligible 5,323 dev / 11,288 test (46 / 123 users). 150 dev trajectories run.
+  GMR = CQ error / baseline error, Hausdorff: H1 3.90 [Bonferroni 3.18, 4.80],
+  H2 1.09 [0.64, 1.54], tuned H3 2.93. Chosen c: cq 4, rdp 0, vw 0. CQ lost to RDP
+  on all 150 trajectories and beat VW on 26%. Relative to the optimal vertex subset
+  (shortcut error): RDP 1.55, VW 3.94, CQ 4.51. The H1 ratio is flat across budget
+  fractions (K/N <= 3%: 4.5, 3-7%: 3.8, 7-15%: 3.7, > 15%: 4.4), and CQ is relatively
+  worse on longer trajectories (Spearman with N +0.59). Pinning was off in 83.3% of
+  CQ runs. Median method time: CQ 0.44 ms, RDP 0.72 ms, VW 4.4 ms (indicative,
+  Python). The data came from the user's own copy of GeoLife, zipped in batches
+  and unpacked byte-for-byte; no test trajectory was run. The method is **not**
+  being changed in response.
+
 **What changed after those results were seen (v1.0 to v1.1).** Every change
 below came from an independent adversarial review of the harness. None is a
 change to the hypotheses, the primary metric, the budgets or the methods.

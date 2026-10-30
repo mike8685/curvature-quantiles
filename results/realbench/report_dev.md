@@ -4,6 +4,58 @@ Protocol 1.1. Primary metric: directed Hausdorff error. GMR < 1 means the first 
 
 **DEV SPLIT. Used only for tuning and debugging. Not evidence.**
 
+## geolife (exploratory)
+
+150 curves; eligible dev/test = {'dev': 5323, 'test': 11288}; clusters dev/test = {'dev': 46, 'test': 123}; too short 1234, duplicates 825; loader skips none; tuned c = {'cq': 4, 'rdp': 0, 'vw': 0}
+
+| test | comparison | GMR | 95% CI | Bonferroni CI | p | win / loss | clusters / curves | exact fits both / A only / B only | Holm p | decision |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| H1 | cq vs rdp (c0) | 3.903 | [3.406, 4.477] | [3.183, 4.800] | 2.4e-07 | 0% / 100% | 23 / 150 (0 tied) | 0 / 0 / 0 |  | (CQ worse; exploratory) |
+| H2 | cq vs vw (c0) | 1.094 | [0.779, 1.413] | [0.638, 1.535] | 0.02 | 26% / 74% | 23 / 150 (0 tied) | 0 / 0 / 0 |  | (inconclusive; exploratory) |
+| H3 | cq vs rdp (tuned) | 2.926 | [2.731, 3.155] | [2.643, 3.297] | 2.4e-07 | 0% / 100% | 23 / 150 (0 tied) | 0 / 0 / 0 |  | (CQ worse; exploratory) |
+
+Secondary metrics (same comparisons):
+
+| comparison | GMR | 95% CI | Bonferroni CI | p | win / loss | clusters / curves | exact fits both / A only / B only |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| H1/rmse | 2.849 | [2.582, 3.132] | [2.466, 3.292] | 2.4e-07 | 0% / 100% | 23 / 150 (0 tied) | 0 / 0 / 0 |
+| H1/shortcut | 3.663 | [3.263, 4.117] | [3.084, 4.344] | 2.4e-07 | 0% / 100% | 23 / 150 (0 tied) | 0 / 0 / 0 |
+| H2/rmse | 1.642 | [1.169, 2.141] | [0.940, 2.357] | 0.0027 | 9% / 91% | 23 / 150 (0 tied) | 0 / 0 / 0 |
+| H2/shortcut | 0.957 | [0.714, 1.194] | [0.601, 1.273] | 0.26 | 26% / 74% | 23 / 150 (0 tied) | 0 / 0 / 0 |
+| H3/rmse | 2.067 | [1.959, 2.179] | [1.909, 2.242] | 2.4e-07 | 0% / 100% | 23 / 150 (0 tied) | 0 / 0 / 0 |
+| H3/shortcut | 2.840 | [2.607, 3.101] | [2.496, 3.242] | 2.4e-07 | 0% / 100% | 23 / 150 (0 tied) | 0 / 0 / 0 |
+
+Ablations and baselines vs RDP (c = 0):
+
+| comparison | GMR | 95% CI | Bonferroni CI | p | win / loss | clusters / curves | exact fits both / A only / B only |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| vw | 3.569 | [2.774, 4.956] | [2.531, 5.979] | 2.4e-07 | 0% / 100% | 23 / 150 (0 tied) | 0 / 0 / 0 |
+| uniform | 4.567 | [3.931, 5.386] | [3.685, 5.891] | 2.4e-07 | 0% / 100% | 23 / 150 (0 tied) | 0 / 0 / 0 |
+| cq_unpinned | 3.756 | [3.288, 4.307] | [3.078, 4.644] | 2.4e-07 | 0% / 100% | 23 / 150 (0 tied) | 0 / 0 / 0 |
+| cq_snapped | 3.363 | [3.023, 3.744] | [2.860, 3.957] | 2.4e-07 | 0% / 100% | 23 / 150 (0 tied) | 0 / 0 / 0 |
+| cq_p1 | 7.617 | [5.588, 10.631] | [4.842, 12.837] | 2.4e-07 | 0% / 100% | 23 / 150 (0 tied) | 0 / 0 / 0 |
+
+Ratio to optimal vertex subset (shortcut error, N <= 800):
+
+| comparison | GMR | 95% CI | Bonferroni CI | p | win / loss | clusters / curves | exact fits both / A only / B only |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| cq | 4.506 | [3.864, 5.199] | [3.553, 5.555] | 3.8e-06 | 0% / 100% | 19 / 93 (0 tied) | 0 / 0 / 0 |
+| rdp | 1.553 | [1.442, 1.696] | [1.395, 1.784] | 3.8e-06 | 0% / 100% | 19 / 93 (0 tied) | 0 / 0 / 0 |
+| vw | 3.939 | [3.162, 5.040] | [2.843, 5.830] | 3.8e-06 | 0% / 100% | 19 / 93 (0 tied) | 0 / 0 / 0 |
+| cq_snapped | 4.269 | [3.743, 4.873] | [3.481, 5.204] | 3.8e-06 | 0% / 100% | 19 / 93 (0 tied) | 0 / 0 / 0 |
+
+GMR by actual budget fraction K/N (clusters): H1: <=3% 4.545 (22), 3-7% 3.844 (22), 7-15% 3.738 (23), >15% 4.416 (23); H2: <=3% 1.242 (22), 3-7% 0.930 (22), 7-15% 1.041 (23), >15% 1.145 (23); H3: <=3% 3.128 (22), 3-7% 2.587 (22), 7-15% 2.592 (23), >15% 3.838 (23)
+
+Spearman correlation of H1 per-curve log ratio with curve properties (positive = CQ relatively worse as the property grows): N +0.59, turning +0.40, straight +0.35, kn -0.49
+
+Failure rates (fallback to uniform): none
+
+Mean point shortfall below K: {'cq_snapped@c0': 3.4936479128856623}
+
+Share of cq runs (c = 0) where corner pinning switched off (no corner, or more than K-2): 83.3%
+
+Median runtime ms (Python, indicative): cq@c0 0.44, cq@c1 0.54, cq@c2 0.55, cq@c4 0.52, cq@c8 0.51, cq@c16 0.46, cq_p1@c0 0.29, cq_snapped@c0 0.49, cq_unpinned@c0 0.37, oracle@c0 114.30, rdp@c0 0.72, rdp@c1 0.71, rdp@c2 0.73, rdp@c4 0.71, rdp@c8 0.70, rdp@c16 0.73, uniform@c0 0.11, vw@c0 4.42, vw@c1 4.35, vw@c2 4.39, vw@c4 4.50, vw@c8 4.40, vw@c16 4.33
+
 ## ne_coastline (exploratory)
 
 150 curves; eligible dev/test = {'dev': 308, 'test': 661}; clusters dev/test = {'dev': 61, 'test': 154}; too short 3164, duplicates 0; loader skips none; tuned c = {'cq': 4, 'rdp': 0, 'vw': 0}
